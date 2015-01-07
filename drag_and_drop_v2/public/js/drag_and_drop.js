@@ -6,9 +6,37 @@ function DragAndDropBlock(runtime, element) {
           data: JSON.stringify(data)
       });
     }
-
+    
+    
     var dragAndDrop = (function($) {
-        var _fn = {
+        
+        // small function to strip number of the 'px' value at the end (for css)
+        // and add up to three numbers together plus perform add/subtract operation on those numbers
+        // and concat to 'px'
+        var pxOperation = function(one, two, three, operation){
+            var first, second, pattern = /^([\d\.]+)px$/,
+                added, third = three | 0;
+    
+            first = parseInt(one.match(pattern)[1]);
+            second = parseInt(two.match(pattern)[1]);
+            if (operation === "add"){
+                added = (first + second + third) + "px";
+            } else {
+                added = (first - second - third) + "px";
+            }
+            
+            return added;
+        },
+        
+        // functionality to shuffle the list array
+        // code borrowed from: http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript
+        shuffleArray = function(o){
+            for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), 
+                    x = o[--i], o[i] = o[j], o[j] = x);
+                return o;
+        },
+
+        _fn = {
             pupup_ts: Date.now(),
 
             // DOM Elements
@@ -194,6 +222,22 @@ function DragAndDropBlock(runtime, element) {
                             if (data.correct_location) {
                                 $el.draggable('disable');
 
+				// snap into the same position as the droppable field
+				// instead of dropping exactly where the user dropped it
+				// TODO: make this possible as an option in the edit dialog of the xblock
+				
+				$(element).find('.zone.ui-droppable').each(function(){ 
+					if ( $(this).data('zone') === $el.data('zone')){ 
+						$el.css('top', $(this).css('top'));//), $el.css('top'), 0, 'subtract') );
+						$el.css('left', 
+                            pxOperation( $(this).css('left'), $el.parent().css('width'), 15, 'add') 
+                        );
+
+                        // set position to absolute to avoid weird positioning results
+                        $el.css('position', 'absolute');
+					}
+				});
+
                                 if (data.finished) {
                                     _fn.finish(data.final_feedback);
                                 }
@@ -256,7 +300,8 @@ function DragAndDropBlock(runtime, element) {
                         $el.removeClass('within-dropzone fade')
                             .css({
                                 top: '',
-                                left: ''
+                                left: '',
+                                position: 'relative'
                             });
                     }
                 },
@@ -280,11 +325,11 @@ function DragAndDropBlock(runtime, element) {
                     _fn.$items.each(function (){
                         var $el = $(this),
                             saved_entry = _fn.data.state.items[$el.data('value')];
+
                         if (saved_entry) {
                             var $input_div = $el.find('.numerical-input')
                             var $input = $input_div.find('.input');
                             $input.val(saved_entry.input);
-                          console.log('wuwuwu', saved_entry)
                             if ('input' in saved_entry) {
                                 $input_div.addClass(saved_entry.correct_input ? 'correct' : 'incorrect');
                                 $input.prop('disabled', true);
@@ -299,17 +344,28 @@ function DragAndDropBlock(runtime, element) {
                 },
                 draw: function() {
                     var list = [],
+                        saved_state = false,
                         items = _fn.data.items,
                         tpl = _fn.tpl.item,
                         img_tpl = _fn.tpl.imageItem;
 
                     items.forEach(function(item) {
+                        if(_fn.data.state.items[$(item).data('value')]){
+                            saved_state = true;
+                        }
+
                         if (item.backgroundImage.length > 0) {
                             list.push(img_tpl(item));
                         } else {
                             list.push(tpl(item));
                         }
                     });
+
+                    // shuffle the items array if not an exercise in progress
+                    // TODO: add an option for shuffle in the edit dialog and check it here as well
+                    if( !saved_state ){
+                        list = shuffleArray(list);
+                    }
 
                     // Update DOM
                     _fn.$ul.html(list.join(''));
