@@ -68,6 +68,10 @@ function DragAndDropEditBlock(runtime, element) {
                             $('.display-labels-form input', element).prop('checked', true);
                         }
 
+                        if (_fn.data.shuffleItems) {
+                            $('.shuffle-items-form input', element).prop('checked', true);
+                        }
+
                         $fbkTab.addClass('hidden');
                         $zoneTab.removeClass('hidden');
 
@@ -119,6 +123,9 @@ function DragAndDropEditBlock(runtime, element) {
                         })
                         .on('click', '.display-labels-form input', function(e) {
                             _fn.data.displayLabels = $('.display-labels-form input', element).is(':checked');
+                        })
+                        .on('click', '.shuffle-items-form input', function(e) {
+                            _fn.data.shuffleItems = $('.shuffle-items-form input', element).is(':checked');
                         });
 
                     $itemTab
@@ -278,7 +285,8 @@ function DragAndDropEditBlock(runtime, element) {
                             dropdown_items = arr.concat('none');
 
                         for (i=0; i<dropdown_items.length; i++) {
-                            is_sel = (dropdown_items[i] == selected) ? 'selected' : '';
+                            console.log("its here");
+                            is_sel = ( selected.indexOf(dropdown_items[i]) != -1 ) ? 'selected' : '';
                             dropdown.push(tpl({ value: dropdown_items[i], selected: is_sel }));
                         }
 
@@ -380,6 +388,8 @@ function DragAndDropEditBlock(runtime, element) {
                                     },
                                     backgroundImage: backgroundImage
                                 };
+
+                                console.debug('data is here');
 
                                 var numValue = parseFloat($el.find('.item-numerical-value').val());
                                 var numMargin = parseFloat($el.find('.item-numerical-margin').val());

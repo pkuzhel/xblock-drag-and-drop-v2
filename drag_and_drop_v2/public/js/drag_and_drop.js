@@ -200,6 +200,7 @@ function DragAndDropBlock(runtime, element) {
                     stop: function(event, ui) {
                         var $el = $(event.currentTarget);
 
+                        console.debug('dropped!');
                         if (!$el.hasClass('within-dropzone')) {
                             // Return to original position
                             _fn.eventHandlers.drag.reset($el);
@@ -347,7 +348,8 @@ function DragAndDropBlock(runtime, element) {
                         saved_state = false,
                         items = _fn.data.items,
                         tpl = _fn.tpl.item,
-                        img_tpl = _fn.tpl.imageItem;
+                        img_tpl = _fn.tpl.imageItem
+                        shuffle = _fn.data.shuffleItems;
 
                     items.forEach(function(item) {
                         if(_fn.data.state.items[$(item).data('value')]){
@@ -362,8 +364,7 @@ function DragAndDropBlock(runtime, element) {
                     });
 
                     // shuffle the items array if not an exercise in progress
-                    // TODO: add an option for shuffle in the edit dialog and check it here as well
-                    if( !saved_state ){
+                    if( !saved_state && shuffle ){
                         list = shuffleArray(list);
                     }
 
