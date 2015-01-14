@@ -364,8 +364,13 @@ function DragAndDropBlock(runtime, element) {
                     });
 
                     // shuffle the items array if not an exercise in progress
+                    console.debug("shuffling?");
+                    console.debug(saved_state);
+                    console.debug(shuffle);
+                    console.debug(_fn.data);
                     if( !saved_state && shuffle ){
                         list = shuffleArray(list);
+                        console.debug("shuffling!!!");
                     }
 
                     // Update DOM

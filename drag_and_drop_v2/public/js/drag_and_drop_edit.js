@@ -123,14 +123,14 @@ function DragAndDropEditBlock(runtime, element) {
                         })
                         .on('click', '.display-labels-form input', function(e) {
                             _fn.data.displayLabels = $('.display-labels-form input', element).is(':checked');
-                        })
-                        .on('click', '.shuffle-items-form input', function(e) {
-                            _fn.data.shuffleItems = $('.shuffle-items-form input', element).is(':checked');
                         });
 
                     $itemTab
                         .on('click', '.add-item', function(e) {
                             _fn.build.form.item.add();
+                        })
+                        .on('click', '.shuffle-items-form input', function(e) {
+                            _fn.data.shuffleItems = $('.shuffle-items-form input', element).is(':checked');
                         })
                         .on('click', '.remove-item', _fn.build.form.item.remove);
                 },
@@ -169,7 +169,8 @@ function DragAndDropEditBlock(runtime, element) {
                                 width: oldZone.width || 200,
                                 height: oldZone.height || 100,
                                 x: oldZone.x || 0,
-                                y: oldZone.y || 0
+                                y: oldZone.y || 0,
+                                maxAccept: oldZone.maxAccept || 0
                             };
 
                             _fn.build.form.zone.obj.push(zoneObj);
@@ -261,6 +262,11 @@ function DragAndDropEditBlock(runtime, element) {
 
                                     $div.css('top', y + 'px');
                                     record.y = y;
+                                }).on('keyup', '.maxAccept', function(e) {
+                                    var maxAccept = $(e.currentTarget).val(),
+                                        record = _fn.build.form.zone.getObjByIndex(num);
+
+                                    record.maxAccept = maxAccept;
                                 });
                         },
                         cleanObject: function(arr) {
