@@ -217,6 +217,8 @@ function DragAndDropEditBlock(runtime, element) {
                             var zones = [],
                                 $form = _fn.build.$el.zones.form.find('.title');
 
+                            console.debug('setting all');
+
                             $form.each(function(i, el) {
                                 var val = $(el).val();
 
@@ -267,6 +269,7 @@ function DragAndDropEditBlock(runtime, element) {
                                         record = _fn.build.form.zone.getObjByIndex(num);
 
                                     record.maxAccept = maxAccept;
+                                    console.debug('hello there');
                                 });
                         },
                         cleanObject: function(arr) {
@@ -291,7 +294,6 @@ function DragAndDropEditBlock(runtime, element) {
                             dropdown_items = arr.concat('none');
 
                         for (i=0; i<dropdown_items.length; i++) {
-                            console.log("its here");
                             is_sel = ( selected.indexOf(dropdown_items[i]) != -1 ) ? 'selected' : '';
                             dropdown.push(tpl({ value: dropdown_items[i], selected: is_sel }));
                         }
@@ -394,8 +396,6 @@ function DragAndDropEditBlock(runtime, element) {
                                     },
                                     backgroundImage: backgroundImage
                                 };
-
-                                console.debug('data is here');
 
                                 var numValue = parseFloat($el.find('.item-numerical-value').val());
                                 var numMargin = parseFloat($el.find('.item-numerical-margin').val());

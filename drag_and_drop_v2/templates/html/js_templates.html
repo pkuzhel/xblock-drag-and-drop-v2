@@ -23,7 +23,7 @@
 </script>
 
 <script id="zone-element-tpl" type="text/html">
-    <div id="{{ id }}" class="zone" data-zone="{{ title }}" style="
+    <div id="{{ id }}" class="zone" data-zone="{{ title }}" data-maxAccept="{{ maxAccept}}" style="
         top:{{ y }}px;
         left:{{ x }}px;
         width:{{ width }}px;
@@ -49,6 +49,10 @@
            <input type="text" class="coord x" value="{{ x }}" />
            <label>y</label>
            <input type="text" class="coord y" value="{{ y }}" />
+           <br />
+           <label># of drops</label>
+           <input type="text" class="maxAccept" value="{{ maxAccept }}" />
+           <p>*maximum # of items to accept (0 = unlimited [default]):</p>
        </div>
     </div>
 </script>

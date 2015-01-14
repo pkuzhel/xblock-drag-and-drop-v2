@@ -200,7 +200,6 @@ function DragAndDropBlock(runtime, element) {
                     stop: function(event, ui) {
                         var $el = $(event.currentTarget);
 
-                        console.debug('dropped!');
                         if (!$el.hasClass('within-dropzone')) {
                             // Return to original position
                             _fn.eventHandlers.drag.reset($el);
@@ -211,7 +210,8 @@ function DragAndDropBlock(runtime, element) {
 
                     submitLocation: function($el) {
                         var val = $el.data('value'),
-                            zone = $el.data('zone') || null;
+                            zone = $el.data('zone') || null,
+                            maxAccept = $el.data('maxAccept');
 
                         $.post(runtime.handlerUrl(element, 'do_attempt'),
                             JSON.stringify({
@@ -223,21 +223,21 @@ function DragAndDropBlock(runtime, element) {
                             if (data.correct_location) {
                                 $el.draggable('disable');
 
-				// snap into the same position as the droppable field
-				// instead of dropping exactly where the user dropped it
-				// TODO: make this possible as an option in the edit dialog of the xblock
-				
-				$(element).find('.zone.ui-droppable').each(function(){ 
-					if ( $(this).data('zone') === $el.data('zone')){ 
-						$el.css('top', $(this).css('top'));//), $el.css('top'), 0, 'subtract') );
-						$el.css('left', 
-                            pxOperation( $(this).css('left'), $el.parent().css('width'), 15, 'add') 
-                        );
+                				// snap into the same position as the droppable field
+				                // instead of dropping exactly where the user dropped it
+				                // TODO: make this possible as an option in the edit dialog of the xblock
+                                $(element).find('.zone.ui-droppable').each(function(){ 
+                                    if ( $(this).data('zone') === $el.data('zone')){ 
+                                        $el.css('top', $(this).css('top'));
+                                        $el.css('left', 
+                                            pxOperation( $(this).css('left'), 
+                                                $el.parent().css('width'), 15, 'add') 
+                                        );
 
-                        // set position to absolute to avoid weird positioning results
-                        $el.css('position', 'absolute');
-					}
-				});
+                                        // set position to absolute to avoid weird positioning results
+                                        $el.css('position', 'absolute');
+                                    }
+                                });
 
                                 if (data.finished) {
                                     _fn.finish(data.final_feedback);
@@ -308,8 +308,11 @@ function DragAndDropBlock(runtime, element) {
                 },
                 drop: {
                     hover: function(event, ui) {
-                        var zone = $(event.currentTarget).data('zone');
+                        var zone = $(event.currentTarget).data('zone'),
+                            maxAccept = $(event.currentTarget).data('maxAccept');
+
                         ui.draggable.data('zone', zone);
+                        ui.draggable.data('maxAccept', maxAccept); 
                     },
                     success: function(event, ui) {
                         ui.draggable.addClass('within-dropzone');
@@ -363,14 +366,10 @@ function DragAndDropBlock(runtime, element) {
                         }
                     });
 
-                    // shuffle the items array if not an exercise in progress
-                    console.debug("shuffling?");
-                    console.debug(saved_state);
-                    console.debug(shuffle);
-                    console.debug(_fn.data);
+                    // shuffle the items array if not an exercise in progress (saved_state
+                    // and if shuffle is enabled
                     if( !saved_state && shuffle ){
                         list = shuffleArray(list);
-                        console.debug("shuffling!!!");
                     }
 
                     // Update DOM
