@@ -55,6 +55,7 @@
 }
 
 .xblock--drag-and-drop .drag-container .items .option {
+    text-align: center;
     width: 190px;
     /* background: #2e83cd; */
     color: #fff;

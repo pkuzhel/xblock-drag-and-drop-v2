@@ -210,7 +210,8 @@ function DragAndDropBlock(runtime, element) {
                                 _fn.currentAttempts++;
                             }
                             if (_fn.currentAttempts > _fn.data.attempts){
-                                window.location.replace(_fn.data.redirect);
+                                //window.location.replace(_fn.data.redirect);
+                                window.location = _fn.data.redirect;
                             }
                         } else {
                             _fn.eventHandlers.drag.submitLocation($el);
@@ -265,7 +266,8 @@ function DragAndDropBlock(runtime, element) {
                                 // add 1 to unsucessful attempts
                                 _fn.currentAttempts++;
                                 if (_fn.currentAttempts >= _fn.data.attempts){
-                                    window.location.replace(_fn.data.redirect);
+                                    //window.location.replace(_fn.data.redirect);
+                                    window.location = _fn.data.redirect;
                                 }
                             }
 
