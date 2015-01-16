@@ -211,8 +211,9 @@ function DragAndDropBlock(runtime, element) {
                             }
                             if (_fn.currentAttempts > _fn.data.attempts){
                                 //window.location.replace(_fn.data.redirect);
-                                window.location = _fn.data.redirect;
-                            }
+                                //window.location = _fn.data.redirect;
+                                window.location.href = "/jump_to_id/" + _fn.data.redirect;
+			    }
                         } else {
                             _fn.eventHandlers.drag.submitLocation($el);
                         }
@@ -255,7 +256,9 @@ function DragAndDropBlock(runtime, element) {
                                 maxAttempts: maxAttempts
                         }), 'json').done(function(data){
                             if (data.correct_location) {
-                                $el.draggable('disable');
+                                if (_fn.currentAttempts < _fn.data.attempts){
+                                    $el.draggable('disable');
+				}
 
                                 if (data.finished) {
                                     _fn.finish(data.final_feedback);
@@ -267,7 +270,9 @@ function DragAndDropBlock(runtime, element) {
                                 _fn.currentAttempts++;
                                 if (_fn.currentAttempts >= _fn.data.attempts){
                                     //window.location.replace(_fn.data.redirect);
-                                    window.location = _fn.data.redirect;
+                                    //window.location = _fn.data.redirect;
+                                    window.location.href = _fn.data.redirect;
+                                    //window.location.href = "/jump_to_id/" + _fn.data.redirect;
                                 }
                             }
 
