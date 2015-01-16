@@ -206,7 +206,7 @@ function DragAndDropBlock(runtime, element) {
                         if (!$el.hasClass('within-dropzone') || !$el.hasClass('accepted-dropzone')){
                             // Return to original position
                             _fn.eventHandlers.drag.reset($el);
-                            if (!el.hasClass('accepted-dropzone')){
+                            if (!$el.hasClass('accepted-dropzone')){
                                 _fn.currentAttempts++;
                             }
                             if (_fn.currentAttempts > _fn.data.attempts){
