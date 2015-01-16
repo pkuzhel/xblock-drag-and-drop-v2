@@ -183,11 +183,6 @@ class DragAndDropBlock(XBlock):
         is_correct = False
         is_correct_location = False
 
-        print("This is the stuff: ...")
-
-        print(item['zone'])
-        print(attempt['zone'])
-
         if 'input' in attempt:
             state = self._get_item_state().get(str(item['id']))
             if state:
