@@ -76,6 +76,9 @@ function DragAndDropBlock(runtime, element) {
             init: function(data) {
                 _fn.data = data;
 
+                // set attempts to 0
+                _fn.currentAttempts = 0;
+
                 // Compile templates
                 _fn.tpl.init();
 
@@ -200,9 +203,15 @@ function DragAndDropBlock(runtime, element) {
                     stop: function(event, ui) {
                         var $el = $(event.currentTarget);
 
-                        if (!$el.hasClass('within-dropzone')) {
+                        if (!$el.hasClass('within-dropzone') || !$el.hasClass('accepted-dropzone')){
                             // Return to original position
                             _fn.eventHandlers.drag.reset($el);
+                            if (!el.hasClass('accepted-dropzone')){
+                                _fn.currentAttempts++;
+                            }
+                            if (_fn.currentAttempts > _fn.data.attempts){
+                                window.location.replace(_fn.data.redirect);
+                            }
                         } else {
                             _fn.eventHandlers.drag.submitLocation($el);
                         }
@@ -211,33 +220,41 @@ function DragAndDropBlock(runtime, element) {
                     submitLocation: function($el) {
                         var val = $el.data('value'),
                             zone = $el.data('zone') || null,
-                            maxAccept = $el.data('maxAccept');
+                            accepted = $el.data('accepted'),
+                            maxAttempts = false;
+
+                        if (_fn.currentAttempts >= _fn.data.attempts){
+                            maxAttempts = true;
+                        }
+
+                		// snap into the same position as the droppable field
+				        // instead of dropping exactly where the user dropped it
+				        // TODO: make this possible as an option in the edit dialog of the xblock
+                        $(element).find('.zone.ui-droppable').each(function(){ 
+                            if ( $(this).data('zone') === $el.data('zone')){ 
+                                $el.css('top', $(this).css('top'));
+                                $el.css('left', 
+                                    pxOperation( $(this).css('left'), 
+                                        $el.parent().css('width'), 15, 'add') 
+                                );
+
+                                // set position to absolute to avoid weird positioning results
+                                $el.css('position', 'absolute');
+                            }
+                        });
 
                         $.post(runtime.handlerUrl(element, 'do_attempt'),
                             JSON.stringify({
                                 val: val,
                                 zone: zone,
                                 top: $el.css('top'),
-                                left: $el.css('left')
+                                left: $el.css('left'),
+                                accepted: accepted,
+                                redirect: _fn.data.redirect,
+                                maxAttempts: maxAttempts
                         }), 'json').done(function(data){
                             if (data.correct_location) {
                                 $el.draggable('disable');
-
-                				// snap into the same position as the droppable field
-				                // instead of dropping exactly where the user dropped it
-				                // TODO: make this possible as an option in the edit dialog of the xblock
-                                $(element).find('.zone.ui-droppable').each(function(){ 
-                                    if ( $(this).data('zone') === $el.data('zone')){ 
-                                        $el.css('top', $(this).css('top'));
-                                        $el.css('left', 
-                                            pxOperation( $(this).css('left'), 
-                                                $el.parent().css('width'), 15, 'add') 
-                                        );
-
-                                        // set position to absolute to avoid weird positioning results
-                                        $el.css('position', 'absolute');
-                                    }
-                                });
 
                                 if (data.finished) {
                                     _fn.finish(data.final_feedback);
@@ -245,6 +262,11 @@ function DragAndDropBlock(runtime, element) {
                             } else {
                                 // Return to original position
                                 _fn.eventHandlers.drag.reset($el);
+                                // add 1 to unsucessful attempts
+                                _fn.currentAttempts++;
+                                if (_fn.currentAttempts >= _fn.data.attempts){
+                                    window.location.replace(_fn.data.redirect);
+                                }
                             }
 
                             if (data.feedback) {
@@ -309,13 +331,29 @@ function DragAndDropBlock(runtime, element) {
                 drop: {
                     hover: function(event, ui) {
                         var zone = $(event.currentTarget).data('zone'),
-                            maxAccept = $(event.currentTarget).data('maxAccept');
+                            maxAccept = $(event.currentTarget).data('maxaccept');
 
                         ui.draggable.data('zone', zone);
-                        ui.draggable.data('maxAccept', maxAccept); 
                     },
                     success: function(event, ui) {
+                        var accepted = $(event.currentTarget).data('accepted'),
+                            maxAccept = $(event.currentTarget).data('maxaccept');
+
+
+                        if (accepted != ""){
+                            $(event.currentTarget).data('accepted', ++accepted);
+                        } else {
+                            $(event.currentTarget).data('accepted', 1);
+                            accepted = 1;
+                        }
+
                         ui.draggable.addClass('within-dropzone');
+
+                        if (accepted <= maxAccept){ 
+                            ui.draggable.addClass('accepted-dropzone');
+                            ui.draggable.data('accepted', accepted);
+                        }
+
                         var item = _fn.data.items[ui.draggable.data('value')];
                         if (item.inputOptions) {
                             ui.draggable.find('.input').focus();
@@ -341,6 +379,7 @@ function DragAndDropBlock(runtime, element) {
                             }
                             if ('input' in saved_entry || saved_entry.correct_input) {
                                 $el.addClass('fade');
+                                $el.css('position', 'absolute')
                             }
                             _fn.eventHandlers.drag.set($el, saved_entry.top, saved_entry.left);
                         }
@@ -352,7 +391,9 @@ function DragAndDropBlock(runtime, element) {
                         items = _fn.data.items,
                         tpl = _fn.tpl.item,
                         img_tpl = _fn.tpl.imageItem
-                        shuffle = _fn.data.shuffleItems;
+                        shuffle = _fn.data.shuffleItems,
+                        background = _fn.data.backgroundItems,
+                        backgroundColor = _fn.data.backgroundColorItems;
 
                     items.forEach(function(item) {
                         if(_fn.data.state.items[$(item).data('value')]){
@@ -377,6 +418,13 @@ function DragAndDropBlock(runtime, element) {
 
                     // Set variable
                     _fn.$items = $('.xblock--drag-and-drop .items .option', element);
+
+                    // custom background color added here
+                    if(background){
+                        _fn.$items.each(function(key, item){
+                            $(item).css("backgroundColor",backgroundColor);
+                        });
+                    }
                 }
             },
 

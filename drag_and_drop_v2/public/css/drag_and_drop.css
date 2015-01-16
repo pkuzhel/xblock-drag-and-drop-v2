@@ -56,8 +56,6 @@
 
 .xblock--drag-and-drop .drag-container .items .option {
     width: 190px;
-    /* TODO: Create option for background color on/off 
-    inside the edit dialog */
     /* background: #2e83cd; */
     color: #fff;
     position: relative;

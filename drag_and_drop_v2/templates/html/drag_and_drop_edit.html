@@ -29,6 +29,12 @@
 
                     <h3>Final Feedback</h3>
                     <textarea class="final-feedback">{{ self.data.feedback.finish }}</textarea>
+
+                    <h3>Maximum Attempts</h3>
+                    <input class="attempts" value="3" value="{{ self.data.attempts }}"/>
+
+                    <h3>Redirect URL</h3>
+                    <textarea class="redirect">{{ self.data.redirect }}</textarea>
                 </form>
             </section>
         </div>
@@ -65,6 +71,14 @@
                 <section class="tab-content shuffle-items-form">
                     <label for="shuffle-items">Shuffle draggable items:</label>
                     <input name="shuffle-items" id="shuffle-items" type="checkbox" checked />
+                </section>
+                <section class="tab-content background-items-form">
+                    <label for="background-items">Apply a background colour for items:</label>
+                    <input name="background-items" id="background-items" type="checkbox" />
+                </section>
+                <section class="tab-content background-color-items-form">
+                    <label for="background-color-items">CSS Color:</label>
+                    <input name="background-color-items" id="background-color-items" type="text" disabled />
                 </section>
                 <form class="items-form"></form>
             </section>

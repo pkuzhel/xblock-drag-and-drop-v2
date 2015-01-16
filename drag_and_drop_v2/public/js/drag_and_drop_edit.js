@@ -72,6 +72,16 @@ function DragAndDropEditBlock(runtime, element) {
                             $('.shuffle-items-form input', element).prop('checked', true);
                         }
 
+                        if (_fn.data.backgroundItems) {
+                            $('.background-items-form input', element).prop('checked', true);
+                            $('.background-color-items-form input', element).prop('disabled', false);
+                        }
+
+                        if (_fn.data.backgroundColorItems) {
+                            $('.background-color-items-form input', element)
+                                .val(_fn.data.backgroundColorItems);
+                        }
+
                         $fbkTab.addClass('hidden');
                         $zoneTab.removeClass('hidden');
 
@@ -132,6 +142,18 @@ function DragAndDropEditBlock(runtime, element) {
                         .on('click', '.shuffle-items-form input', function(e) {
                             _fn.data.shuffleItems = $('.shuffle-items-form input', element).is(':checked');
                         })
+                        .on('click', '.background-items-form input', function(e) {
+                            _fn.data.backgroundItems = $('.background-items-form input', element).is(':checked');
+
+                            if(_fn.data.backgroundItems){
+                                $('.background-color-items-form input', element).prop('disabled', false);
+                            } else {
+                                $('.background-color-items-form input', element).prop('disabled', true);
+                            }
+                        })
+                        .on('keyup', '.background-color-items-form input', function(e) {
+                            _fn.data.backgroundColorItems = $('.background-color-items-form input', element).val();
+                        })
                         .on('click', '.remove-item', _fn.build.form.item.remove);
                 },
                 form: {
@@ -170,7 +192,8 @@ function DragAndDropEditBlock(runtime, element) {
                                 height: oldZone.height || 100,
                                 x: oldZone.x || 0,
                                 y: oldZone.y || 0,
-                                maxAccept: oldZone.maxAccept || 0
+                                maxAccept: oldZone.maxAccept || 0,
+                                accepted: oldZone.accepted || 0
                             };
 
                             _fn.build.form.zone.obj.push(zoneObj);
@@ -269,7 +292,6 @@ function DragAndDropEditBlock(runtime, element) {
                                         record = _fn.build.form.zone.getObjByIndex(num);
 
                                     record.maxAccept = maxAccept;
-                                    console.debug('hello there');
                                 });
                         },
                         cleanObject: function(arr) {
@@ -294,7 +316,9 @@ function DragAndDropEditBlock(runtime, element) {
                             dropdown_items = arr.concat('none');
 
                         for (i=0; i<dropdown_items.length; i++) {
-                            is_sel = ( selected.indexOf(dropdown_items[i]) != -1 ) ? 'selected' : '';
+                            if (selected){
+                                is_sel = ( selected.indexOf(dropdown_items[i]) != -1 ) ? 'selected' : '';
+                            }
                             dropdown.push(tpl({ value: dropdown_items[i], selected: is_sel }));
                         }
 
@@ -412,6 +436,8 @@ function DragAndDropEditBlock(runtime, element) {
 
                         _fn.data.items = items;
                         _fn.data.zones = _fn.build.form.zone.cleanObject(_fn.build.form.zone.obj);
+                        _fn.data.attempts = $(element).find('.attempts').val();
+                        _fn.data.redirect = $(element).find('.redirect').val();
 
                         var data = {
                             'display_name': $(element).find('.display-name').val(),
