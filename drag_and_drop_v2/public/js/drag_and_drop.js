@@ -206,13 +206,26 @@ function DragAndDropBlock(runtime, element) {
                         if (!$el.hasClass('within-dropzone') || !$el.hasClass('accepted-dropzone')){
                             // Return to original position
                             _fn.eventHandlers.drag.reset($el);
+				console.log("check attempts");
                             if (!$el.hasClass('accepted-dropzone')){
                                 _fn.currentAttempts++;
                             }
                             if (_fn.currentAttempts > _fn.data.attempts){
+				var current = window.location.href, newUrl, tempSplit, splitter;
+
+				splitter = "courseware";
+
+				tempSplit = current.split(splitter);
+				
+				newUrl = tempSplit[0];
                                 //window.location.replace(_fn.data.redirect);
                                 //window.location = _fn.data.redirect;
-                                window.location.href = "/jump_to_id/" + _fn.data.redirect;
+				console.debug("redirecting");
+				console.debug(window.location);
+				console.debug(newUrl);
+				
+				window.location.assign(newUrl + "jump_to_id/" + _fn.data.redirect);
+                                //window.location = "/jump_to_id/" + _fn.data.redirect;
 			    }
                         } else {
                             _fn.eventHandlers.drag.submitLocation($el);
@@ -229,9 +242,9 @@ function DragAndDropBlock(runtime, element) {
                             maxAttempts = true;
                         }
 
-                		// snap into the same position as the droppable field
-				        // instead of dropping exactly where the user dropped it
-				        // TODO: make this possible as an option in the edit dialog of the xblock
+                	// snap into the same position as the droppable field
+		        // instead of dropping exactly where the user dropped it
+		        // TODO: make this possible as an option in the edit dialog of the xblock
                         $(element).find('.zone.ui-droppable').each(function(){ 
                             if ( $(this).data('zone') === $el.data('zone')){ 
                                 $el.css('top', $(this).css('top'));
@@ -268,11 +281,23 @@ function DragAndDropBlock(runtime, element) {
                                 _fn.eventHandlers.drag.reset($el);
                                 // add 1 to unsucessful attempts
                                 _fn.currentAttempts++;
+				console.log("check attempts");
                                 if (_fn.currentAttempts >= _fn.data.attempts){
+				  var current = window.location.href, newUrl, tempSplit, splitter;
+				splitter = "courseware";
+
+				tempSplit = current.split(splitter);
+				
+				newUrl = tempSplit[0];
+                                //window.location.replace(_fn.data.redirect);
                                     //window.location.replace(_fn.data.redirect);
                                     //window.location = _fn.data.redirect;
-                                    window.location.href = _fn.data.redirect;
+				console.log("redirecting: ");
+				console.debug(window.location);
+				console.log(_fn.data.redirect);
+                                    //window.location.href = _fn.data.redirect;
                                     //window.location.href = "/jump_to_id/" + _fn.data.redirect;
+				window.location.assign(newUrl + "jump_to_id/" + _fn.data.redirect);
                                 }
                             }
 
@@ -340,6 +365,9 @@ function DragAndDropBlock(runtime, element) {
                         var zone = $(event.currentTarget).data('zone'),
                             maxAccept = $(event.currentTarget).data('maxaccept');
 
+			console.debug("Zone: ");
+			console.debug(zone);
+
                         ui.draggable.data('zone', zone);
                     },
                     success: function(event, ui) {
@@ -347,18 +375,17 @@ function DragAndDropBlock(runtime, element) {
                             maxAccept = $(event.currentTarget).data('maxaccept');
 
 
-                        if (accepted != ""){
-                            $(event.currentTarget).data('accepted', ++accepted);
-                        } else {
-                            $(event.currentTarget).data('accepted', 1);
-                            accepted = 1;
+                        if (accepted === "" || !accepted){
+                            $(event.currentTarget).data('accepted', 0);
+                            accepted = 0;
                         }
 
                         ui.draggable.addClass('within-dropzone');
 
-                        if (accepted <= maxAccept){ 
+                        if (accepted <= maxAccept && ui.draggable.hasClass("within-dropzone")){ 
                             ui.draggable.addClass('accepted-dropzone');
                             ui.draggable.data('accepted', accepted);
+                            $(event.currentTarget).data('accepted', ++accepted);
                         }
 
                         var item = _fn.data.items[ui.draggable.data('value')];

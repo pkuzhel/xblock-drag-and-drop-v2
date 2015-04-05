@@ -81,6 +81,7 @@ class DragAndDropBlock(XBlock):
             'js_templates': js_templates,
             'title': self.display_name,
             'question_text': self.question_text,
+	    'redirect': self.data.redirect,
         }
 
         fragment = Fragment()
