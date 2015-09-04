@@ -56,6 +56,13 @@ class DragAndDropBlock(XBlock):
         default=default_data
     )
 
+    redirect = String(
+        display_name="RedirectURL",
+        help="The link to which the user will be redirected upon unsuccessful attempts",
+        scope=Scope.content,
+        default=""
+    )
+
     item_state = Dict(
         help="How the student has interacted with the problem",
         scope=Scope.user_state,
@@ -81,7 +88,7 @@ class DragAndDropBlock(XBlock):
             'js_templates': js_templates,
             'title': self.display_name,
             'question_text': self.question_text,
-	    'redirect': self.data.redirect,
+            'redirect': self.redirect,
         }
 
         fragment = Fragment()
